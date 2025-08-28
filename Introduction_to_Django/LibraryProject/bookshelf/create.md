@@ -4,10 +4,7 @@
 from bookshelf.models import Book
 
 # The below python command creates a book instance.
-book = Book(title="1984", author="George Orwell", publication_year=1949)
-
-# The below python command saves the book instance in the database.
-book.save()
+book = Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
 
 # The print command below prints the book title.
 print(book.title)

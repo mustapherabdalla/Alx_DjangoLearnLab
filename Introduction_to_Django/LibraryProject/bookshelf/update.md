@@ -1,6 +1,6 @@
 # Update a book instance and save in the database.
 
-# The below statement imports the Book model from models.py in the bookshelf app
+# The below statement imports the Book model from models.py in the bookshelf app.
 from bookshelf.models import Book
 
 # The below python command fetches the book instance using its title.

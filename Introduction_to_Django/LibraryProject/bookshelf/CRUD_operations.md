@@ -1,9 +1,8 @@
-# Creation of a book instance and save it in the database.
+# The below statement imports the Book model from models.py in the bookshelf app.
 from bookshelf.models import Book
 
-book = Book(title="1984", author="George Orwell", publication_year=1949)
-
-book.save()
+# Creation of a book instance and save it in the database.
+book = Book.objects.create(title="1984", author="George Orwell", publication_year=1949)
 
 print(book.title)
 
@@ -17,7 +16,6 @@ for book in books:
 
 Output: 1984  George Orwell  1949
 
-
 # Update a book instance and save it in the database.
 book = Book.objects.get(title="1984")
 
@@ -28,7 +26,6 @@ book.save()
 print(book.title)
 
 Output: Nineteen Eighty-Four
-
 
 # Delete a book instance from the database.
 book = Book.objects.get(title="1984")

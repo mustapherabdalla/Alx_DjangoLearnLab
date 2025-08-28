@@ -4,7 +4,7 @@
 from bookshelf.models import Book
 
 # The below python command fetches all the book instances saved in the database.
-books = Book.objects.all()
+books = Book.objects.get(title="1984")
 
 # The below python command loops through the book instances and prints their titles, authors and publication year.
 for book in books:

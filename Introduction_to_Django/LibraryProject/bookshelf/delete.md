@@ -7,7 +7,7 @@ from bookshelf.models import Book
 book = Book.objects.get(title="1984")
 
 # The below python command deletes the book from the database.
-book.title = “Nineteen Eighty-Four”
+book.delete()
 
 # The print command below prints the book title after deletion.
 print(book.title)

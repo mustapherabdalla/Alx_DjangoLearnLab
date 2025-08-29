@@ -30,8 +30,6 @@ Output: Nineteen Eighty-Four
 # Delete a book instance from the database.
 book = Book.objects.get(title="1984")
 
-book.title = “Nineteen Eighty-Four”
-
 book.delete()
 
 Book object (None)

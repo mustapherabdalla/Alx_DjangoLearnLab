@@ -32,6 +32,6 @@ book = Book.objects.get(title="1984")
 
 book.title = “Nineteen Eighty-Four”
 
-print(book.title)
+book.delete()
 
 Book object (None)

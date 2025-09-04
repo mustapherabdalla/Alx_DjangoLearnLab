@@ -1,4 +1,4 @@
-from .models import Book, Library, Author
+from .models import Book, Library, Author, Librarian
 
 # Query all books by a specific author
 # noinspection PyUnresolvedReferences
@@ -14,6 +14,4 @@ books = library.books.all()
 
 # Retrieve the librarian for a library
 # noinspection PyUnresolvedReferences
-librarian = Library.objects.get(library='')
-
-
+librarian = Librarian.objects.get(library='')

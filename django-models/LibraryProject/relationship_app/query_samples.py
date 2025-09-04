@@ -14,6 +14,6 @@ books = library.books.all()
 
 # Retrieve the librarian for a library
 # noinspection PyUnresolvedReferences
-librarian = Library.objects.get(library="")
+librarian = Library.objects.get(library='')
 
 

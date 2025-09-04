@@ -1,8 +1,11 @@
-from .models import Book, Library
+from .models import Book, Library, Author
 
 # Query all books by a specific author
 # noinspection PyUnresolvedReferences
-author_books = Book.objects.get(author="George Orwell")
+author = Author.objects.get(author=author_name)
+
+# noinspection PyUnresolvedReferences
+author_books = Book.objects.filter(author=author)
 
 # List all the books in a library
 # noinspection PyUnresolvedReferences

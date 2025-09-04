@@ -6,7 +6,7 @@ author_books = Book.objects.get(author="George Orwell")
 
 # List all the books in a library
 # noinspection PyUnresolvedReferences
-library = Library.objects.get(name="MTL")
+library = Library.objects.get(name=library_name)
 books = library.books.all()
 
 # Retrieve the librarian for a library

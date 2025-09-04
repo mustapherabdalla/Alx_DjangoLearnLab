@@ -2,7 +2,7 @@ from .models import Book, Library, Author
 
 # Query all books by a specific author
 # noinspection PyUnresolvedReferences
-author = Author.objects.get(author=author_name)
+author = Author.objects.get(name=author_name)
 
 # noinspection PyUnresolvedReferences
 author_books = Book.objects.filter(author=author)

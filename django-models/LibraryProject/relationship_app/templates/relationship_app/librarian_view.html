@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Dashboard - Library System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f8f9fa; }
+        .dashboard { max-width: 800px; margin: 0 auto; }
+        .header { background: #28a745; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .library-info { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .btn { display: inline-block; padding: 10px 20px; margin: 5px; text-decoration: none; border-radius: 5px; color: white; }
+        .btn-primary { background: #007bff; }
+        .btn-success { background: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>📚 Librarian Dashboard</h1>
+            <p>Welcome, {{ user.username }} ({{ role }})</p>
+        </div>
+
+        {% if managed_library %}
+        <div class="library-info">
+            <h2>Your Library: {{ managed_library.name }}</h2>
+            <p><strong>Books in collection:</strong> {{ books_count }}</p>
+            <div>
+                <a href="{% url 'relationship_app:library_books' managed_library.pk %}" class="btn btn-success">
+                    View All Books
+                </a>
+                <a href="{% url 'relationship_app:library_detail' managed_library.pk %}" class="btn btn-primary">
+                    Library Details
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="library-info">
+            <h2>No Library Assigned</h2>
+            <p>Please contact an administrator to assign you to a library.</p>
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'relationship_app:home' %}" class="btn btn-primary">← Back to Home</a>
+            <a href="{% url 'relationship_app:book_list' %}" class="btn btn-success">Browse All Books</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -41,37 +41,6 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
-
-# User Registration View (Function-based)
-def register(request):
-    """Function-based view for user registration"""
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-
-            # Automatically log in the user after registration
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Account created successfully! Welcome {username}!')
-                return redirect('relationship_app/login.html')
-            else:
-                messages.error(request, 'Authentication failed after registration.')
-        else:
-            # Display form errors
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field}: {error}")
-    else:
-        form = UserCreationForm()
-
-    return render(request, 'relationship_app/register.html', {'form': form})
-
-
 # Function-based login view
 def login_view(request):
     """Function-based view for user login"""
@@ -103,3 +72,107 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been successfully logged out.')
     return redirect('relationship_app/login.html')
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .decorators import admin_required, librarian_required, member_required
+from .decorators import is_admin, is_librarian, is_member
+
+
+# Admin View - Using decorator from decorators.py
+@admin_required
+def admin_view(request):
+    """View accessible only to Admin users"""
+    context = {
+        'user': request.user,
+        'role': request.user.profile.get_role_display(),
+        'total_users': User.objects.count(),
+        'total_libraries': Library.objects.count(),
+        'total_books': Book.objects.count(),
+    }
+    return render(request, 'relationship_app/admin_view.html', context)
+
+
+# Librarian View - Using user_passes_test decorator
+@login_required
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    """View accessible only to Librarian users"""
+    # Get libraries managed by this librarian
+    try:
+        librarian = Librarian.objects.get(name=request.user.username)
+        managed_library = librarian.library
+        books_count = managed_library.books.count()
+    except Librarian.DoesNotExist:
+        managed_library = None
+        books_count = 0
+
+    context = {
+        'user': request.user,
+        'role': request.user.profile.get_role_display(),
+        'managed_library': managed_library,
+        'books_count': books_count,
+    }
+    return render(request, 'relationship_app/librarian_view.html', context)
+
+
+# Member View - Using decorator from decorators.py
+@member_required
+def member_view(request):
+    """View accessible only to Member users"""
+    # Get all libraries and books for members to browse
+    libraries = Library.objects.all()
+    books = Book.objects.all().select_related('author')
+
+    context = {
+        'user': request.user,
+        'role': request.user.profile.get_role_display(),
+        'libraries_count': libraries.count(),
+        'books_count': books.count(),
+        'recent_books': books.order_by('-id')[:5],  # Show 5 most recent books
+    }
+    return render(request, 'relationship_app/member_view.html', context)
+
+
+# Update registration view to set default role
+def register(request):
+    """Function-based view for user registration with role assignment"""
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            # Set user role (default to 'member')
+            user.profile.role = 'member'
+            user.profile.save()
+
+            # Automatically log in the user
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Account created successfully! Welcome {username}!')
+                return redirect('relationship_app:home')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'relationship_app/register.html', {'form': form})
+
+
+@login_required
+def profile_view(request):
+    """View for user profile with role information"""
+    user = request.user
+    role_display = user.profile.get_role_display() if hasattr(user, 'profile') else 'No role assigned'
+
+    return render(request, 'relationship_app/profile.html', {
+        'user': user,
+        'role': role_display
+    })

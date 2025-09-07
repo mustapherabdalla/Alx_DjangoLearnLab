@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Dashboard - Library System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f8f9fa; }
+        .dashboard { max-width: 800px; margin: 0 auto; }
+        .header { background: #007bff; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .stats { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .recent-books { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .book-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .btn { display: inline-block; padding: 10px 20px; margin: 5px; text-decoration: none; border-radius: 5px; color: white; }
+        .btn-primary { background: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>👤 Member Dashboard</h1>
+            <p>Welcome, {{ user.username }} ({{ role }})</p>
+        </div>
+
+        <div class="stats">
+            <h2>Library Overview</h2>
+            <p><strong>Available Libraries:</strong> {{ libraries_count }}</p>
+            <p><strong>Total Books:</strong> {{ books_count }}</p>
+        </div>
+
+        <div class="recent-books">
+            <h2>Recently Added Books</h2>
+            {% if recent_books %}
+                {% for book in recent_books %}
+                <div class="book-item">
+                    <strong>{{ book.title }}</strong> by {{ book.author.name }}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No books available yet.</p>
+            {% endif %}
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'relationship_app:home' %}" class="btn btn-primary">← Back to Home</a>
+            <a href="{% url 'relationship_app:library_list' %}" class="btn btn-primary">Browse Libraries</a>
+            <a href="{% url 'relationship_app:book_list' %}" class="btn btn-primary">Browse Books</a>
+        </div>
+    </div>
+</body>
+</html>

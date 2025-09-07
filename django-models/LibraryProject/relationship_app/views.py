@@ -6,7 +6,7 @@ from .models import Book
 from .models import Library
 
 # Create your views here.
-class LibraryDetails(ListView):
+class LibraryDetailView(ListView):
     model = Book
     template_name = "relationship_app/library_detail.html"
     context_object_name = "books"
@@ -25,7 +25,7 @@ class LibraryDetails(ListView):
         return context
 
 
-def book_list(request):
+def list_books(request):
     books = Book.objects.all()
     template_name = 'relationship_app/list_books.html'
     context = {'books': books}

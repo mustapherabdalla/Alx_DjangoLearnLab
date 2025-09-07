@@ -16,12 +16,8 @@ class LibraryDetailView(ListView):
         return library
 
     def get_context_data(self, **kwargs):
-        """Add library information to the context"""
         context = super().get_context_data(**kwargs)
-
-        # Add the library object to context
         context['library'] = self.get_queryset()
-
         return context
 
 

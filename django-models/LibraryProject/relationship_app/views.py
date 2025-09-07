@@ -36,21 +36,40 @@ def list_books(request):
 
 
 # User Registration View
-class RegisterView(CreateView):
-    """Class-based view for user registration"""
-    form_class = UserCreationForm
-    template_name = 'relationship_app/register.html'
-    success_url = reverse_lazy('library_detail.html')
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        # Automatically log in the user after registration
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        login(self.request, user)
-        messages.success(self.request, f'Account created successfully! Welcome {username}!')
-        return response
+
+# User Registration View (Function-based)
+def register(request):
+    """Function-based view for user registration"""
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            # Automatically log in the user after registration
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Account created successfully! Welcome {username}!')
+                return redirect('relationship_app/login.html')
+            else:
+                messages.error(request, 'Authentication failed after registration.')
+        else:
+            # Display form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = UserCreationForm()
+
+    return render(request, 'relationship_app/register.html', {'form': form})
 
 
 # Function-based login view

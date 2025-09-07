@@ -10,9 +10,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .decorators import admin_required, librarian_required, member_required
 from .decorators import is_admin, is_librarian, is_member
+from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
 class LibraryDetailView(ListView):

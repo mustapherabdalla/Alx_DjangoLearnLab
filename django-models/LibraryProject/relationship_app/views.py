@@ -1,7 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.generic import ListView
-from .models import Book, Library
+from .models import Book
+from .models import Library
 
 # Create your views here.
 class LibraryDetails(ListView):

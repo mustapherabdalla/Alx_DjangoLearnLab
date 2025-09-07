@@ -10,6 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from .decorators import admin_required, librarian_required, member_required
+from .decorators import is_admin, is_librarian, is_member
 
 # Create your views here.
 class LibraryDetailView(ListView):
@@ -29,17 +32,90 @@ class LibraryDetailView(ListView):
 
 def list_books(request):
     books = Book.objects.all()
-    template_name = 'relationship_app/list_books.html'
-    context = {'books': books}
 
-    return render(request, template_name, context)
+    return render(request, 'relationship_app/list_books.html', {
+        'books': books,
+        'can_add': request.user.has_perm('relationship_app.can_add_book')
+    })
 
 
-# User Registration View
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
+# Add Book View (requires permission)
+@login_required
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    """View to add a new book (requires can_add_book permission)"""
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            book = form.save()
+            messages.success(request, f'Book "{book.title}" added successfully!')
+            return redirect('relationship_app:book_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = BookForm()
+
+    return render(request, 'relationship_app/book_form.html', {
+        'form': form,
+        'title': 'Add New Book'
+    })
+
+
+# Edit Book View (requires permission)
+@login_required
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, pk):
+    """View to edit an existing book (requires can_change_book permission)"""
+    book = get_object_or_404(Book, pk=pk)
+
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            book = form.save()
+            messages.success(request, f'Book "{book.title}" updated successfully!')
+            return redirect('relationship_app:book_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = BookForm(instance=book)
+
+    return render(request, 'relationship_app/book_form.html', {
+        'form': form,
+        'title': f'Edit Book: {book.title}',
+        'book': book
+    })
+
+
+# Delete Book View (requires permission)
+@login_required
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, pk):
+    """View to delete a book (requires can_delete_book permission)"""
+    book = get_object_or_404(Book, pk=pk)
+
+    if request.method == 'POST':
+        book_title = book.title
+        book.delete()
+        messages.success(request, f'Book "{book_title}" deleted successfully!')
+        return redirect('relationship_app:book_list')
+
+    return render(request, 'relationship_app/book_confirm_delete.html', {
+        'book': book
+    })
+
+
+# Book Detail View (requires view permission)
+@login_required
+@permission_required('relationship_app.can_view_book', raise_exception=True)
+def book_detail(request, pk):
+    """View book details (requires can_view_book permission)"""
+    book = get_object_or_404(Book, pk=pk)
+    return render(request, 'relationship_app/book_detail.html', {
+        'book': book,
+        'can_edit': request.user.has_perm('relationship_app.can_change_book'),
+        'can_delete': request.user.has_perm('relationship_app.can_delete_book')
+    })
+
 
 # Function-based login view
 def login_view(request):
@@ -72,12 +148,6 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have been successfully logged out.')
     return redirect('relationship_app/login.html')
-
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .decorators import admin_required, librarian_required, member_required
-from .decorators import is_admin, is_librarian, is_member
 
 
 # Admin View - Using decorator from decorators.py

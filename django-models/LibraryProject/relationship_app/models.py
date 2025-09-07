@@ -18,6 +18,19 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        # Custom permissions for the Book model
+        permissions = [
+            ("can_add_book", "Can add book"),
+            ("can_change_book", "Can change book"),
+            ("can_delete_book", "Can delete book"),
+            ("can_view_book", "Can view book details"),
+        ]
+
+    def save(self, *args, **kwargs):
+        """Override save to add custom logic if needed"""
+        super().save(*args, **kwargs)
+
 
 class Library(models.Model):
     name = models.CharField(max_length=100)
